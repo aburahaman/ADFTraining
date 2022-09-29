@@ -29,7 +29,7 @@
 					"sink": {
 						"type": "AzureSqlSink",
 						"preCopyScript": {
-							"value": "delete from dbo.cars:",
+							"value": "delete from dbo.cars;",
 							"type": "Expression"
 						},
 						"writeBehavior": "insert",
