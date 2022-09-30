@@ -1,0 +1,22 @@
+{
+	"name": "MoviesOpCSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_BLOB_Training0928",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "MoviesOpCSV.csv",
+				"container": "output"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
