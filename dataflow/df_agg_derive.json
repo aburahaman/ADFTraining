@@ -24,6 +24,13 @@
 						"referenceName": "LS_BLOB_Training0928",
 						"type": "LinkedServiceReference"
 					}
+				},
+				{
+					"dataset": {
+						"referenceName": "MoviesOpCSV",
+						"type": "DatasetReference"
+					},
+					"name": "MoviesCountYear"
 				}
 			],
 			"transformations": [
@@ -32,7 +39,7 @@
 				},
 				{
 					"name": "RatingByYear",
-					"description": "Add "
+					"description": "Aggregating data by 'year' producing columns 'MoviesCnt'"
 				}
 			],
 			"scriptLines": [
@@ -47,7 +54,7 @@
 				"MoviesV1 derive(Year = toInteger(trim(right(title,6),'()')),",
 				"          title = toString(left(title, length(title)-6))) ~> ExtractYearTitle",
 				"ExtractYearTitle aggregate(groupBy(Year),",
-				"     Year = ERROR_FUNCTION('')) ~> RatingByYear",
+				"     MoviesCnt = count(Year)) ~> RatingByYear",
 				"ExtractYearTitle sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['MoviesClean.csv'],",
@@ -55,7 +62,13 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     outputAssertFailedRows: true,",
 				"     assertFailure_container: 'errors',",
-				"     partitionBy('hash', 1)) ~> MoviesClean"
+				"     partitionBy('hash', 1)) ~> MoviesClean",
+				"RatingByYear sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['MovieCountByYear'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> MoviesCountYear"
 			]
 		}
 	}
