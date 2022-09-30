@@ -19,7 +19,11 @@
 						"referenceName": "MoviesOpCSV",
 						"type": "DatasetReference"
 					},
-					"name": "MoviesClean"
+					"name": "MoviesClean",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_BLOB_Training0928",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -43,6 +47,8 @@
 				"     partitionFileNames:['MoviesClean.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'errors',",
 				"     partitionBy('hash', 1)) ~> MoviesClean"
 			]
 		}
