@@ -251,6 +251,7 @@
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
+					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
 				"schema": []
@@ -805,7 +806,7 @@
 								"referenceName": "MoviesOpCSV",
 								"type": "DatasetReference"
 							},
-							"name": "sink1",
+							"name": "MoviesOP",
 							"rejectedDataLinkedService": {
 								"referenceName": "LS_BLOB_Training0928",
 								"type": "LinkedServiceReference"
@@ -845,7 +846,7 @@
 						"     ignoreNoFilesFound: false) ~> MoviesDB",
 						"Movies derive(titleNew = toString((left(title,length(title)-6)))) ~> MoviesClean",
 						"MoviesClean, MoviesDB join(titleNew == MoviesDB@title,",
-						"     joinType:'inner',",
+						"     joinType:'right',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> JoinMovies",
@@ -867,7 +868,7 @@
 						"     validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
+						"     partitionBy('hash', 1)) ~> MoviesOP"
 					]
 				}
 			},
@@ -952,8 +953,9 @@
 								"datasetParameters": {
 									"Movies": {},
 									"MoviesDB": {},
-									"sink1": {}
-								}
+									"MoviesOP": {}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
