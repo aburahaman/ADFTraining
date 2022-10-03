@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "Movies_DS",
+						"referenceName": "Movies_DS1",
 						"type": "DatasetReference"
 					},
 					"name": "Movies"
@@ -27,7 +27,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> Movies",
-				"Movies derive(titleNew =  toString((left(title,length(title)-6)))) ~> MoviesClean"
+				"Movies derive(titleNew = toString((left(title,length(title)-6)))) ~> MoviesClean"
 			]
 		}
 	}
