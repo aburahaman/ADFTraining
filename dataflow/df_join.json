@@ -25,7 +25,7 @@
 					"name": "MoviesClean"
 				},
 				{
-					"name": "Joinmovies"
+					"name": "JoinMovies"
 				}
 			],
 			"scriptLines": [
@@ -53,7 +53,7 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> Joinmovies"
+				"     broadcast: 'auto')~> JoinMovies"
 			]
 		}
 	}
