@@ -19,13 +19,28 @@
 					"name": "MoviesDB"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "MoviesOpCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_BLOB_Training0928",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
 			"transformations": [
 				{
 					"name": "MoviesClean"
 				},
 				{
 					"name": "JoinMovies"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -53,7 +68,26 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> JoinMovies"
+				"     broadcast: 'auto')~> JoinMovies",
+				"JoinMovies select(mapColumn(",
+				"          movieId,",
+				"          title = Movies@title,",
+				"          genres = Movies@genres,",
+				"          titleNew,",
+				"          movie,",
+				"          title = MoviesDB@title,",
+				"          genres = MoviesDB@genres,",
+				"          year,",
+				"          Rating,",
+				"          RottenTomato",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
