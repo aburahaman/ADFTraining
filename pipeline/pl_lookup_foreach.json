@@ -27,6 +27,12 @@
 					},
 					"firstRowOnly": false
 				}
+			},
+			{
+				"name": "ForEachTablesList",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": []
 			}
 		],
 		"annotations": []
