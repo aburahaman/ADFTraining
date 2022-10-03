@@ -30,7 +30,11 @@
 						"referenceName": "MoviesOpCSV",
 						"type": "DatasetReference"
 					},
-					"name": "MoviesCountYear"
+					"name": "MoviesCountYear",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_BLOB_Training0928",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
