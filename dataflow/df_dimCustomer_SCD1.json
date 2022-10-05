@@ -31,7 +31,7 @@
 					"name": "lookupCustomerID"
 				},
 				{
-					"name": "SetDate"
+					"name": "SetDates"
 				}
 			],
 			"scriptLines": [
@@ -78,7 +78,8 @@
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookupCustomerID",
-				"lookupCustomerID derive(InsertedDate = iif(isNull(InsertedDate), currentTimestamp(),{InsertedDate})) ~> SetDate"
+				"lookupCustomerID derive(InsertedDate = iif(isNull(InsertedDate), currentTimestamp(),InsertedDate),",
+				"          ModifiedDate = currentTimestamp()) ~> SetDates"
 			]
 		}
 	}
