@@ -25,7 +25,11 @@
 						"referenceName": "DimCustomer",
 						"type": "DatasetReference"
 					},
-					"name": "SinkTarget"
+					"name": "SinkTarget",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_BLOB_Training0928",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -113,6 +117,7 @@
 				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:true,",
+				"     keys:['CustomerID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
