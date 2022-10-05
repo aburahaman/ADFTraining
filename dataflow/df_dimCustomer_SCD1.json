@@ -29,6 +29,9 @@
 				},
 				{
 					"name": "lookupCustomerID"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -74,7 +77,8 @@
 				"exists, DimCustomer lookup(CustomerSource@CustomerID == DimCustomer@CustomerID,",
 				"     multiple: false,",
 				"     pickup: 'any',",
-				"     broadcast: 'auto')~> lookupCustomerID"
+				"     broadcast: 'auto')~> lookupCustomerID",
+				"lookupCustomerID derive(InsertedDate = iif(isNull(InsertedDate), currentTimestamp(),{InsertedDate})) ~> derivedColumn1"
 			]
 		}
 	}
