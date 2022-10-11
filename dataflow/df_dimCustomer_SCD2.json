@@ -226,7 +226,7 @@
 				"          SalesPerson = LKP_SalesPerson,",
 				"          EmailAddress = LKP_EmailAddress,",
 				"          Phone = LKP_Phone,",
-				"          ModifiedDate = LKP_ModifiedDate,",
+				"          ModifiedDate = LKP_InsertedDate,",
 				"          IsActive = LKP_IsActive",
 				"     )) ~> sink2"
 			]
