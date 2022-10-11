@@ -35,7 +35,9 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> CustomerSource",
-				"CustomerSource derive(IsActive = 1) ~> AddingIsActive"
+				"CustomerSource derive(IsActive = 1,",
+				"          InsertedDate = currentTimestamp(),",
+				"          UpdatedDate = currentTimestamp()) ~> AddingIsActive"
 			]
 		}
 	}
