@@ -38,6 +38,9 @@
 				},
 				{
 					"name": "AliasName"
+				},
+				{
+					"name": "lookup1"
 				}
 			],
 			"scriptLines": [
@@ -98,6 +101,10 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> AliasName",
+				"CustomerSource, AliasName lookup(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
 				"AddingIsActive sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
