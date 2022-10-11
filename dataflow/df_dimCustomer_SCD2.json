@@ -208,7 +208,7 @@
 				"     insertable:false,",
 				"     updateable:true,",
 				"     upsertable:false,",
-				"     keys:['LKP_SurrKey'],",
+				"     keys:['SurrKey'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
