@@ -221,7 +221,22 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink2"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          SurrKey = LKP_SurrKey,",
+				"          CustomerID = LKP_CustomerID,",
+				"          Title = LKP_Title,",
+				"          FirstName = LKP_FirstName,",
+				"          MiddleName = LKP_MiddleName,",
+				"          LastName = LKP_LastName,",
+				"          Suffix = LKP_Suffix,",
+				"          CompanyName = LKP_CompanyName,",
+				"          SalesPerson = LKP_SalesPerson,",
+				"          EmailAddress = LKP_EmailAddress,",
+				"          Phone = LKP_Phone,",
+				"          ModifiedDate = LKP_ModifiedDate,",
+				"          IsActive = LKP_IsActive",
+				"     )) ~> sink2"
 			]
 		}
 	}
