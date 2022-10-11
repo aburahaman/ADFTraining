@@ -14,7 +14,15 @@
 			],
 			"sinks": [
 				{
-					"name": "sink1"
+					"dataset": {
+						"referenceName": "DimCustomerV1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_BLOB_Training0928",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -41,11 +49,48 @@
 				"     format: 'table') ~> CustomerSource",
 				"CustomerSource derive(IsActive = 1,",
 				"          InsertedDate = currentTimestamp(),",
-				"          UpdatedDate = currentTimestamp()) ~> AddingIsActive",
+				"          ModefiedDate = currentTimestamp()) ~> AddingIsActive",
 				"AddingIsActive sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          SurrKey as integer,",
+				"          CustomerID as integer,",
+				"          Title as string,",
+				"          FirstName as string,",
+				"          MiddleName as string,",
+				"          LastName as string,",
+				"          Suffix as string,",
+				"          CompanyName as string,",
+				"          SalesPerson as string,",
+				"          EmailAddress as string,",
+				"          Phone as string,",
+				"          InsertedDate as timestamp,",
+				"          ModifiedDate as timestamp,",
+				"          IsActive as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerID,",
+				"          Title,",
+				"          FirstName,",
+				"          MiddleName,",
+				"          LastName,",
+				"          Suffix,",
+				"          CompanyName,",
+				"          SalesPerson,",
+				"          EmailAddress,",
+				"          Phone,",
+				"          InsertedDate,",
+				"          ModifiedDate = ModefiedDate,",
+				"          IsActive",
+				"     )) ~> sink1"
 			]
 		}
 	}
