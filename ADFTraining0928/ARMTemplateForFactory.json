@@ -1220,6 +1220,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "CustomerSource"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimCustomerV1",
+								"type": "DatasetReference"
+							},
+							"name": "DimCustomer"
 						}
 					],
 					"sinks": [
@@ -1238,6 +1245,15 @@
 					"transformations": [
 						{
 							"name": "AddingIsActive"
+						},
+						{
+							"name": "AliasName"
+						},
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "ExistingRows"
 						}
 					],
 					"scriptLines": [
@@ -1257,9 +1273,51 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> CustomerSource",
+						"source(output(",
+						"          SurrKey as integer,",
+						"          CustomerID as integer,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          InsertedDate as timestamp,",
+						"          ModifiedDate as timestamp,",
+						"          IsActive as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DimCustomer",
 						"CustomerSource derive(IsActive = 1,",
 						"          InsertedDate = currentTimestamp(),",
 						"          ModifiedDate = currentTimestamp()) ~> AddingIsActive",
+						"DimCustomer select(mapColumn(",
+						"          LKP_SurrKey = SurrKey,",
+						"          LKP_CustomerID = CustomerID,",
+						"          LKP_Title = Title,",
+						"          LKP_FirstName = FirstName,",
+						"          LKP_MiddleName = MiddleName,",
+						"          LKP_LastName = LastName,",
+						"          LKP_Suffix = Suffix,",
+						"          LKP_CompanyName = CompanyName,",
+						"          LKP_SalesPerson = SalesPerson,",
+						"          LKP_EmailAddress = EmailAddress,",
+						"          LKP_Phone = Phone,",
+						"          LKP_InsertedDate = InsertedDate,",
+						"          LKP_ModifiedDate = ModifiedDate,",
+						"          LKP_IsActive = IsActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> AliasName",
+						"CustomerSource, AliasName lookup(CustomerID == LKP_CustomerID,",
+						"     multiple: true,",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 filter(isNull(LKP_CustomerID)) ~> ExistingRows",
 						"AddingIsActive sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
