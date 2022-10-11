@@ -49,7 +49,7 @@
 				"     format: 'table') ~> CustomerSource",
 				"CustomerSource derive(IsActive = 1,",
 				"          InsertedDate = currentTimestamp(),",
-				"          ModefiedDate = currentTimestamp()) ~> AddingIsActive",
+				"          ModifiedDate = currentTimestamp()) ~> AddingIsActive",
 				"AddingIsActive sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -88,7 +88,7 @@
 				"          EmailAddress,",
 				"          Phone,",
 				"          InsertedDate,",
-				"          ModifiedDate = ModefiedDate,",
+				"          ModifiedDate,",
 				"          IsActive",
 				"     )) ~> sink1"
 			]
