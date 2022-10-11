@@ -269,7 +269,7 @@
 						"CustomerSource, AliasName lookup(CustomerID == LKP_CustomerID,",
 						"     multiple: true,",
 						"     broadcast: 'auto')~> lookup1",
-						"lookup1 filter(isNull(LKP_CustomerID)) ~> ExistingRows",
+						"lookup1 filter(!isNull(LKP_CustomerID)) ~> ExistingRows",
 						"AddingIsActive sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
