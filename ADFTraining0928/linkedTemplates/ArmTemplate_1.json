@@ -13,6 +13,350 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/df_dimCustomer_SCD1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "CustomerSource",
+								"type": "DatasetReference"
+							},
+							"name": "CustomerSource"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimCustomer",
+								"type": "DatasetReference"
+							},
+							"name": "DimCustomer"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimCustomer",
+								"type": "DatasetReference"
+							},
+							"name": "SinkTarget",
+							"rejectedDataLinkedService": {
+								"referenceName": "LS_BLOB_Training0928",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "CreateHashKey"
+						},
+						{
+							"name": "exists"
+						},
+						{
+							"name": "lookupCustomerID"
+						},
+						{
+							"name": "SetDates"
+						},
+						{
+							"name": "Upsert"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CustomerID as integer,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> CustomerSource",
+						"source(output(",
+						"          CustomerID as integer,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          InsertedDate as timestamp,",
+						"          ModifiedDate as timestamp,",
+						"          HashKey as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DimCustomer",
+						"CustomerSource derive(HashKey = sha2(256, iifNull(Title,'')+iifNull(FirstName,'')+iifNull(MiddleName,'')+iifNull(LastName,'')+iifNull(Suffix,'')+iifNull(CompanyName,'')+iifNull(SalesPerson,'')+iifNull(EmailAddress,'')+iifNull(Phone,''))) ~> CreateHashKey",
+						"CreateHashKey, DimCustomer exists(CreateHashKey@HashKey == DimCustomer@HashKey,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> exists",
+						"exists, DimCustomer lookup(CustomerSource@CustomerID == DimCustomer@CustomerID,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookupCustomerID",
+						"lookupCustomerID derive(InsertedDate = iif(isNull(InsertedDate), currentTimestamp(),InsertedDate),",
+						"          ModifiedDate = currentTimestamp()) ~> SetDates",
+						"SetDates alterRow(upsertIf(true())) ~> Upsert",
+						"Upsert sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          CustomerID as integer,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          InsertedDate as timestamp,",
+						"          ModifiedDate as timestamp,",
+						"          HashKey as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['CustomerID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          CustomerID = CustomerSource@CustomerID,",
+						"          Title = CustomerSource@Title,",
+						"          FirstName = CustomerSource@FirstName,",
+						"          MiddleName = CustomerSource@MiddleName,",
+						"          LastName = CustomerSource@LastName,",
+						"          Suffix = CustomerSource@Suffix,",
+						"          CompanyName = CustomerSource@CompanyName,",
+						"          SalesPerson = CustomerSource@SalesPerson,",
+						"          EmailAddress = CustomerSource@EmailAddress,",
+						"          Phone = CustomerSource@Phone,",
+						"          InsertedDate,",
+						"          ModifiedDate,",
+						"          HashKey = CreateHashKey@HashKey",
+						"     )) ~> SinkTarget"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dimCustomer_SCD2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "CustomerSourceV1",
+								"type": "DatasetReference"
+							},
+							"name": "CustomerSource"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimCustomerV1",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "LS_BLOB_Training0928",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "AddingIsActive"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CustomerID as integer,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> CustomerSource",
+						"CustomerSource derive(IsActive = 1,",
+						"          InsertedDate = currentTimestamp(),",
+						"          ModifiedDate = currentTimestamp()) ~> AddingIsActive",
+						"AddingIsActive sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          SurrKey as integer,",
+						"          CustomerID as integer,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          InsertedDate as timestamp,",
+						"          ModifiedDate as timestamp,",
+						"          IsActive as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          CustomerID,",
+						"          Title,",
+						"          FirstName,",
+						"          MiddleName,",
+						"          LastName,",
+						"          Suffix,",
+						"          CompanyName,",
+						"          SalesPerson,",
+						"          EmailAddress,",
+						"          Phone,",
+						"          InsertedDate,",
+						"          ModifiedDate,",
+						"          IsActive",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_join')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Movies_DS1",
+								"type": "DatasetReference"
+							},
+							"name": "Movies"
+						},
+						{
+							"dataset": {
+								"referenceName": "MoviesDB_DS",
+								"type": "DatasetReference"
+							},
+							"name": "MoviesDB"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "MoviesOpCSV",
+								"type": "DatasetReference"
+							},
+							"name": "MoviesOP",
+							"rejectedDataLinkedService": {
+								"referenceName": "LS_BLOB_Training0928",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "MoviesClean"
+						},
+						{
+							"name": "JoinMovies"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          movieId as string,",
+						"          title as string,",
+						"          genres as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Movies",
+						"source(output(",
+						"          movie as string,",
+						"          title as string,",
+						"          genres as string,",
+						"          year as string,",
+						"          Rating as string,",
+						"          RottenTomato as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> MoviesDB",
+						"Movies derive(titleNew = trim(toString((left(title,length(title)-6))))) ~> MoviesClean",
+						"MoviesClean, MoviesDB join(titleNew == MoviesDB@title,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinMovies",
+						"JoinMovies select(mapColumn(",
+						"          movieId,",
+						"          title = Movies@title,",
+						"          genres = Movies@genres,",
+						"          titleNew,",
+						"          movie,",
+						"          title = MoviesDB@title,",
+						"          genres = MoviesDB@genres,",
+						"          year,",
+						"          Rating,",
+						"          RottenTomato",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['Movies_join_Derive.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> MoviesOP"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_agg_derive')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -102,7 +446,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_join')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pl_scd1')]",
@@ -148,7 +494,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_dimCustomer_SCD1')]"
+			]
 		}
 	]
 }
