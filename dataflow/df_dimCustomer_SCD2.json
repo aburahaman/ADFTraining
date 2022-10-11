@@ -56,7 +56,7 @@
 					"name": "select1"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "IsActive0"
 				},
 				{
 					"name": "alterRow1"
@@ -142,8 +142,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 derive(lkp_IsaC = ERROR_FUNCTION('')) ~> derivedColumn1",
-				"derivedColumn1 alterRow(updateIf(1==1)) ~> alterRow1",
+				"select1 derive(LKP_IsActive = 0) ~> IsActive0",
+				"IsActive0 alterRow(updateIf(1==1)) ~> alterRow1",
 				"AddingIsActive sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
