@@ -1388,6 +1388,13 @@
 								"referenceName": "LS_BLOB_Training0928",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"dataset": {
+								"referenceName": "DimCustomerV1",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
 						}
 					],
 					"transformations": [
@@ -1402,6 +1409,15 @@
 						},
 						{
 							"name": "ExistingRows"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "IsActive0"
+						},
+						{
+							"name": "alterRow1"
 						}
 					],
 					"scriptLines": [
@@ -1466,6 +1482,26 @@
 						"     multiple: true,",
 						"     broadcast: 'auto')~> lookup1",
 						"lookup1 filter(!isNull(LKP_CustomerID)) ~> ExistingRows",
+						"ExistingRows select(mapColumn(",
+						"          LKP_SurrKey,",
+						"          LKP_CustomerID,",
+						"          LKP_Title,",
+						"          LKP_FirstName,",
+						"          LKP_MiddleName,",
+						"          LKP_LastName,",
+						"          LKP_Suffix,",
+						"          LKP_CompanyName,",
+						"          LKP_SalesPerson,",
+						"          LKP_EmailAddress,",
+						"          LKP_Phone,",
+						"          LKP_InsertedDate,",
+						"          LKP_ModifiedDate,",
+						"          LKP_IsActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 derive(LKP_IsActive = 0) ~> IsActive0",
+						"IsActive0 alterRow(updateIf(1==1)) ~> alterRow1",
 						"AddingIsActive sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -1491,6 +1527,7 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          CustomerID,",
@@ -1506,7 +1543,50 @@
 						"          InsertedDate,",
 						"          ModifiedDate,",
 						"          IsActive",
-						"     )) ~> sink1"
+						"     )) ~> sink1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          SurrKey as integer,",
+						"          CustomerID as integer,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          InsertedDate as timestamp,",
+						"          ModifiedDate as timestamp,",
+						"          IsActive as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['SurrKey'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          SurrKey = LKP_SurrKey,",
+						"          CustomerID = LKP_CustomerID,",
+						"          Title = LKP_Title,",
+						"          FirstName = LKP_FirstName,",
+						"          MiddleName = LKP_MiddleName,",
+						"          LastName = LKP_LastName,",
+						"          Suffix = LKP_Suffix,",
+						"          CompanyName = LKP_CompanyName,",
+						"          SalesPerson = LKP_SalesPerson,",
+						"          EmailAddress = LKP_EmailAddress,",
+						"          Phone = LKP_Phone,",
+						"          ModifiedDate = LKP_InsertedDate,",
+						"          IsActive = LKP_IsActive",
+						"     )) ~> sink2"
 					]
 				}
 			},
