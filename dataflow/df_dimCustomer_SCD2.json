@@ -13,7 +13,11 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "AddingIsActive"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          CustomerID as integer,",
@@ -30,7 +34,8 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> CustomerSource"
+				"     format: 'table') ~> CustomerSource",
+				"CustomerSource derive(IsActive = 1) ~> AddingIsActive"
 			]
 		}
 	}
